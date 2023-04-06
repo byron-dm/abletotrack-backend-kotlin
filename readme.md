@@ -25,13 +25,13 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## About the project
 
-This is the backend for the AbleToTrack project.
+This is the backend for the AbleToTrack application.
 
-## Built With
+## Built with
 * [Kotlin][Kotlin-url]
-* [.Spring Boot] [SpringBoot-url]
+* [Spring Boot][SpringBoot-url]
 * [Gradle][Gradle-url]
 
 
