@@ -2,6 +2,7 @@ package com.lwsoftware.abletotrack.controllers
 
 import com.lwsoftware.abletotrack.dto.request.LoginRequestDto
 import com.lwsoftware.abletotrack.dto.response.LoginResponseDto
+import com.lwsoftware.abletotrack.dto.response.RecoverPasswordResponseDto
 import com.lwsoftware.abletotrack.services.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UserController {
+class LoginController {
 
   @Autowired
   private lateinit var userService: UserService;
@@ -19,5 +20,11 @@ class UserController {
   @ResponseBody
   fun login(@RequestBody request: LoginRequestDto): LoginResponseDto {
     return userService.login(request)
+  }
+
+  @PostMapping("/recover-password")
+  @ResponseBody
+  fun recoverPassword(@RequestBody email: String): RecoverPasswordResponseDto {
+    return userService.recoverPassword(email)
   }
 }
