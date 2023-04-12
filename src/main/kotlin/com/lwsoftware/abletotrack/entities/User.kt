@@ -5,6 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -32,4 +34,8 @@ class User {
 
   @Column(name = "should_remember_me", nullable = false)
   var shouldRememberMe = 0;
+
+  @OneToOne
+  @JoinColumn(name = "id", referencedColumnName = "user_id")
+  lateinit var profile: UserProfile;
 }
