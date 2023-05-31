@@ -5,6 +5,10 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Lob
+import jakarta.persistence.MapsId
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -13,14 +17,21 @@ class UserProfile {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = 0
+  @Column(name="ID")
+  var id: Long = 0
 
-  @Column(name = "user_id", nullable = false)
-  val userId: Long = 0;
+  @OneToOne
+  @MapsId
+  @JoinColumn(name = "USER_ID")
+  lateinit var user: User
 
-  @Column(name = "picture")
-  lateinit var picture: String
+  @Column(name = "FIRST_NAME", nullable = false)
+  var firstName = ""
 
-  @Column(name = "is_active", nullable = false)
-  val isActive: Int = 1;
+  @Column(name = "LAST_NAME", nullable = false)
+  var lastName = ""
+
+  @Column(name = "PICTURE")
+  @Lob
+  var picture: ByteArray = ByteArray(0)
 }

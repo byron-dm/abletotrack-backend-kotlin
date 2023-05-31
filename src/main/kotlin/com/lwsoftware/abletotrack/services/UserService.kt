@@ -1,11 +1,8 @@
 package com.lwsoftware.abletotrack.services
 
-import com.lwsoftware.abletotrack.dto.request.LoginRequestDto
-import com.lwsoftware.abletotrack.dto.response.LoginResponseDto
 import com.lwsoftware.abletotrack.dto.response.RecoverPasswordResponseDto
 import com.lwsoftware.abletotrack.dto.response.UserProfileResponseDto
-import com.lwsoftware.abletotrack.dto.response.UserResponseDto
-import com.lwsoftware.abletotrack.extensions.toBoolean
+import com.lwsoftware.abletotrack.extensions.toBase64
 import com.lwsoftware.abletotrack.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
@@ -21,16 +18,6 @@ class UserService {
   @Autowired
   lateinit var messageSource: MessageSource
 
-  fun login(request: LoginRequestDto): LoginResponseDto {
-    val user = repository.getUser(request.email, request.password, request.shouldRememberMe)
-
-    return if (user == null) {
-      LoginResponseDto()
-    } else {
-      LoginResponseDto(true, user.isEmailVerified.toBoolean(), user.id)
-    }
-  }
-
   fun recoverPassword(email: String): RecoverPasswordResponseDto {
     return RecoverPasswordResponseDto(
       true,
@@ -38,9 +25,9 @@ class UserService {
     )
   }
 
-  fun getUser(userId: Long): UserResponseDto {
-    val user = repository.getUser(userId);
+  fun getProfile(userId: Long): UserProfileResponseDto {
+    val user = repository.getUser(userId)
 
-    return UserResponseDto(user.firstName, user.lastName, UserProfileResponseDto(user.profile.picture))
+    return UserProfileResponseDto(user.profile.firstName, user.profile.lastName, user.profile.picture.toBase64())
   }
 }

@@ -5,8 +5,8 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
 import jakarta.persistence.OneToOne
+import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
 
 @Entity
@@ -14,28 +14,23 @@ import jakarta.persistence.Table
 class User {
 
   @Id
+  @Column(name = "ID")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  val id: Long = 0
+  var id: Long = 0
 
-  @Column(name = "first_name", nullable = false)
-  val firstName = ""
+  @Column(name = "EMAIL", nullable = false)
+  var email = ""
 
-  @Column(name = "last_name", nullable = false)
-  val lastName = ""
+  @Column(name = "PASSWORD", nullable = false)
+  var password = ""
 
-  @Column(name = "email", nullable = false)
-  val email = ""
+  @Column(name = "IS_EMAIL_VERIFIED", nullable = false)
+  var isEmailVerified = false
 
-  @Column(name = "password", nullable = false)
-  val password = ""
-
-  @Column(name = "is_email_verified", nullable = false)
-  var isEmailVerified = 0;
-
-  @Column(name = "should_remember_me", nullable = false)
-  var shouldRememberMe = 0;
+  @Column(name = "SHOULD_REMEMBER_ME", nullable = false)
+  var shouldRememberMe = false
 
   @OneToOne
-  @JoinColumn(name = "id", referencedColumnName = "user_id")
-  lateinit var profile: UserProfile;
+  @PrimaryKeyJoinColumn
+  lateinit var profile: UserProfile
 }

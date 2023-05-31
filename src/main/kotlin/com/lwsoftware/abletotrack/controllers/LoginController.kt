@@ -2,39 +2,46 @@ package com.lwsoftware.abletotrack.controllers
 
 import com.lwsoftware.abletotrack.dto.request.LoginRequestDto
 import com.lwsoftware.abletotrack.dto.response.LoginResponseDto
-import com.lwsoftware.abletotrack.dto.response.RecoverPasswordResponseDto
-import com.lwsoftware.abletotrack.dto.response.UserResponseDto
-import com.lwsoftware.abletotrack.services.UserService
+import com.lwsoftware.abletotrack.security.JwtUserDetails
+import com.lwsoftware.abletotrack.services.JwtTokenService
+import com.lwsoftware.abletotrack.services.JwtUserDetailsService
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("user")
 class LoginController {
 
   @Autowired
-  private lateinit var userService: UserService;
+  private lateinit var authenticationManager: AuthenticationManager
+  @Autowired
+  private lateinit var jwtTokenService: JwtTokenService
+  @Autowired
+  private lateinit var jwtUserDetailsService: JwtUserDetailsService
 
   @PostMapping("/login")
-  @ResponseBody
-  fun login(@RequestBody request: LoginRequestDto): LoginResponseDto {
-    return userService.login(request)
-  }
+  fun authenticate(@RequestBody @Valid loginRequestDto: LoginRequestDto): LoginResponseDto {
+    try {
+      authenticationManager.authenticate(
+        UsernamePasswordAuthenticationToken(loginRequestDto.email, loginRequestDto.password)
+      )
+    } catch (exception: BadCredentialsException) {
+      throw ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.message);
+    }
 
-  @PostMapping("/recover-password")
-  @ResponseBody
-  fun recoverPassword(@RequestBody email: String): RecoverPasswordResponseDto {
-    return userService.recoverPassword(email)
-  }
-
-  @GetMapping("/get-user")
-  @ResponseBody
-  fun getProfile(@RequestBody userId: Long): UserResponseDto {
-    return userService.getUser(userId)
+    val userDetails: JwtUserDetails = jwtUserDetailsService.loadUserByUsername(loginRequestDto.email)
+    return LoginResponseDto(
+      accessToken = jwtTokenService.generateToken(userDetails),
+      exists = true,
+      userId = userDetails.userId,
+      isEmailVerified = userDetails.isEmailVerified
+    )
   }
 }

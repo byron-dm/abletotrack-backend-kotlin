@@ -1,8 +1,6 @@
 package com.lwsoftware.abletotrack.repositories
 
 import com.lwsoftware.abletotrack.entities.User
-import com.lwsoftware.abletotrack.entities.UserProfile
-import com.lwsoftware.abletotrack.extensions.toInt
 import jakarta.persistence.criteria.CriteriaBuilder
 import org.springframework.stereotype.Repository
 
@@ -36,24 +34,32 @@ class UserRepository : BaseRepository<User, Long>() {
     return entityManager.createQuery(criteriaQuery).singleResult
   }
 
-  fun getProfile(userId: Long): UserProfile {
+  fun getUser(email: String): User {
     val criteriaBuilder = entityManager.criteriaBuilder
-    val criteriaQuery = criteriaBuilder.createQuery(UserProfile::class.java)
+    val criteriaQuery = criteriaBuilder.createQuery(User::class.java)
 
-    val profile = criteriaQuery.from(UserProfile::class.java)
-    val userPredicate = criteriaBuilder.equal(profile.get<String>("userId"), userId)
-    val activePredicate = criteriaBuilder.equal(profile.get<String>("isActive"), 1)
+    val user = criteriaQuery.from(User::class.java)
+    val emailPredicate = criteriaBuilder.equal(user.get<String>("email"), email)
 
-    criteriaQuery.where(userPredicate, activePredicate)
+    criteriaQuery.where(emailPredicate)
 
-    return entityManager.createQuery(criteriaQuery).singleResult;
+    return entityManager.createQuery(criteriaQuery).singleResult
+  }
+
+  fun getAllUsers(): List<User> {
+    val criteriaBuilder = entityManager.criteriaBuilder
+    val criteriaQuery = criteriaBuilder.createQuery(User::class.java)
+    val user = criteriaQuery.from(User::class.java)
+
+    
+    return entityManager.createQuery(criteriaQuery.select(user)).resultList
   }
 
   private fun updateUser(userId: Long, criteriaBuilder: CriteriaBuilder, shouldRememberMe: Boolean) {
     val criteriaUpdate = criteriaBuilder.createCriteriaUpdate(User::class.java)
     val user = criteriaUpdate.from(User::class.java)
     criteriaUpdate.where(criteriaBuilder.equal(user.get<Long>("id"), userId))
-    criteriaUpdate.set("shouldRememberMe", shouldRememberMe.toInt())
+    criteriaUpdate.set("shouldRememberMe", shouldRememberMe)
 
     entityManager.createQuery(criteriaUpdate).executeUpdate()
   }
